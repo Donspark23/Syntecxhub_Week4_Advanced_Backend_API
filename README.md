@@ -7,9 +7,7 @@
 ![JWT](https://img.shields.io/badge/Auth-JWT-blue)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-# 🚀 Advanced Backend API (Week 4 Project)
-
-🚀 Advanced Backend API built with Node.js, Express, and MongoDB.
+# 🚀 Advanced Backend API (Week 4 Project) built with Node.js, Express, and MongoDB.
 
 Features:
 - JWT Authentication & Authorization
