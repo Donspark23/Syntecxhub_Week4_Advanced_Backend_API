@@ -1,20 +1,52 @@
 const router = require("express").Router();
 
 const {
-  getAllUsers,
+  getUsers,
   promoteUser,
   blockUser,
   unblockUser
 } = require("../controllers/userController");
+const { protect, adminOnly } = require("../middleware/authMiddleware");
+console.log(getUsers, protect, adminOnly);
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User management
+ */
 
-const { protect } = require("../middleware/authMiddleware");
-const { isAdmin } = require("../middleware/roleMiddleware");
+/**
+ * @swagger
+ * /api/users:
+ *   get:
+ *     summary: Get all users
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Users fetched
+ */
+router.get("/", protect, adminOnly, getUsers);
 
-// All routes below are ADMIN ONLY
-
-router.get("/", protect, isAdmin, getAllUsers);
-router.patch("/:id/promote", protect, isAdmin, promoteUser);
-router.patch("/:id/block", protect, isAdmin, blockUser);
-router.patch("/:id/unblock", protect, isAdmin, unblockUser);
+/**
+ * @swagger
+ * /api/users/{id}/promote:
+ *   put:
+ *     summary: Promote user to admin
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User promoted
+ */
+router.put("/:id/promote", protect, adminOnly, promoteUser);
 
 module.exports = router;

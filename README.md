@@ -9,7 +9,18 @@
 
 # 🚀 Advanced Backend API (Week 4 Project)
 
-A production-ready backend API built with Node.js, Express, and MongoDB featuring authentication, role-based access control, audit logging, and scheduled jobs.
+🚀 Advanced Backend API built with Node.js, Express, and MongoDB.
+
+Features:
+- JWT Authentication & Authorization
+- Role-Based Access Control (Admin/User)
+- User Management System (Promote, Block/Unblock)
+- Audit Logging System for Admin Actions
+- Analytics Endpoints (User Stats & Logs)
+- Security Middleware (Helmet, Rate Limiting, CORS)
+- Global Error Handling
+
+Designed with scalable MVC architecture and production-ready practices.
 
 ---
 

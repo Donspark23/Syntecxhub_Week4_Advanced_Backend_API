@@ -14,6 +14,15 @@ const { registerUser, loginUser } = require("../controllers/authController");
  *   post:
  *     summary: Register user
  *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/RegisterInput'
+ *     responses:
+ *       201:
+ *         description: User registered
  */
 router.post("/register", registerUser);
 
@@ -23,6 +32,15 @@ router.post("/register", registerUser);
  *   post:
  *     summary: Login user
  *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/LoginInput'
+ *     responses:
+ *       200:
+ *         description: Login successful
  */
 router.post("/login", loginUser);
 

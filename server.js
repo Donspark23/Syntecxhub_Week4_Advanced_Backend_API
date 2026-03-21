@@ -1,39 +1,54 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-
-const connectDB = require("./config/db");
-
-const swaggerUI = require("swagger-ui-express");
-const swaggerSpec = require("./config/swagger");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 dotenv.config();
 
-// Connect to database
-connectDB();
-
 const app = express();
 
-// Middleware
+// 🔐 SECURITY HEADERS
+app.use(helmet());
+
+// 🌍 CORS (allow all for now, restrict later)
 app.use(cors());
+app.use(cors({
+  origin: "https://your-frontend.com"
+}));
+
+// 🧠 BODY PARSER
 app.use(express.json());
 
-require("./jobs/cronJobs"); // 👈 ADD THIS
-// Swagger Docs
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
-
-// Routes
-app.use("/api/auth", require("./routes/authRoutes"));
-app.use("/api/users", require("./routes/userRoutes"));
-app.use("/api/logs", require("./routes/logRoutes"));
-app.use("/api/jobs", require("./routes/jobRoutes"));
-
-// Root route
-app.get("/", (req, res) => {
-  res.send("Week 4 Advanced Backend API is running 🚀");
+// 🚫 RATE LIMITING (ANTI-SPAM)
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 mins
+  max: 100, // max requests per IP
+  message: "Too many requests, try again later"
 });
 
-// Port
+app.use(limiter);
+
+// 📌 ROUTES
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
+
+// ❌ 404 HANDLER
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
+
+// ⚠️ GLOBAL ERROR HANDLER
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+
+  res.status(err.status || 500).json({
+    message: err.message || "Server Error"
+  });
+});
+
+// 🚀 START SERVER
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

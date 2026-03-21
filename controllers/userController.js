@@ -1,78 +1,53 @@
 const User = require("../models/User");
 
-// ================= GET ALL USERS =================
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find().select("-password");
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+// ✅ GET USERS
+const getUsers = async (req, res) => {
+  const users = await User.find();
+  res.json(users);
 };
 
-
-// ================= PROMOTE USER =================
+// ✅ PROMOTE USER
 const promoteUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
+  const user = await User.findById(req.params.id);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
+  if (user) {
     user.role = "admin";
     await user.save();
-
-    res.json({ message: "User promoted to admin" });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json({ message: "User promoted" });
+  } else {
+    res.status(404).json({ message: "User not found" });
   }
 };
 
-
-// ================= BLOCK USER =================
+// ✅ BLOCK USER
 const blockUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
+  const user = await User.findById(req.params.id);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
+  if (user) {
     user.isBlocked = true;
     await user.save();
-
-    res.json({ message: "User has been blocked" });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json({ message: "User blocked" });
+  } else {
+    res.status(404).json({ message: "User not found" });
   }
 };
 
-
-// ================= UNBLOCK USER (BONUS) =================
+// ✅ UNBLOCK USER
 const unblockUser = async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
+  const user = await User.findById(req.params.id);
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
+  if (user) {
     user.isBlocked = false;
     await user.save();
-
-    res.json({ message: "User has been unblocked" });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json({ message: "User unblocked" });
+  } else {
+    res.status(404).json({ message: "User not found" });
   }
 };
 
-
+// 🚨 VERY IMPORTANT
 module.exports = {
-  getAllUsers,
+  getUsers,
   promoteUser,
   blockUser,
   unblockUser

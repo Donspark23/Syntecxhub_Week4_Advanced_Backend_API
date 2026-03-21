@@ -1,22 +1,19 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
+// 🔐 PROTECT (AUTHENTICATE USER)
 const protect = async (req, res, next) => {
   let token;
 
   try {
-    // Check Authorization header
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
     ) {
-      // Extract token
       token = req.headers.authorization.split(" ")[1];
 
-      // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Get user from DB (without password)
       req.user = await User.findById(decoded.id).select("-password");
 
       next();
@@ -29,4 +26,13 @@ const protect = async (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+// 👑 ADMIN ONLY (NEW)
+const adminOnly = (req, res, next) => {
+  if (req.user && req.user.role === "admin") {
+    next();
+  } else {
+    return res.status(403).json({ message: "Admin access only" });
+  }
+};
+
+module.exports = { protect, adminOnly };
