@@ -4,6 +4,11 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
+// Swagger
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./config/swagger");
+
+
 dotenv.config();
 
 const app = express();
@@ -13,9 +18,9 @@ app.use(helmet());
 
 // 🌍 CORS (allow all for now, restrict later)
 app.use(cors());
-app.use(cors({
-  origin: "https://your-frontend.com"
-}));
+//app.use(cors({
+  //origin: "https://your-frontend.com"
+//}));
 
 // 🧠 BODY PARSER
 app.use(express.json());
@@ -33,6 +38,13 @@ app.use(limiter);
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/logs", require("./routes/logRoutes"));
+
+
+console.log("🔥 AUTH ROUTES LOADED");
+
+// Swagger route
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ❌ 404 HANDLER
 app.use((req, res) => {
