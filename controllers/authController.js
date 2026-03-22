@@ -13,35 +13,36 @@ const generateToken = (id, role) => {
 
 // ================= REGISTER =================
 const registerUser = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+  const { name, email, password } = req.body;
 
-    // Check if user exists
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
-    }
+  // Check if user exists
+  const userExists = await User.findOne({ email });
+  if (userExists) {
+    return res.status(400).json({ message: "User already exists" });
+  }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+  // 🔥 CHECK IF FIRST USER
+  const userCount = await User.countDocuments();
 
-    // Create user
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword
-    });
+  const user = await User.create({
+    name,
+    email,
+    password,
+    role: userCount === 0 ? "admin" : "user" // 👈 MAGIC LINE
+  });
 
+  if (user) {
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role,
-      token: generateToken(user._id, user.role)
+      role: user.role, // 👈 include role for testing
+      token: jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+        expiresIn: "7d"
+      })
     });
-
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } else {
+    res.status(400).json({ message: "Invalid user data" });
   }
 };
 
