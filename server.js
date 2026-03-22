@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const connectDB = require("./config/db");
 
 // Swagger
 const swaggerUi = require("swagger-ui-express");
@@ -11,7 +12,10 @@ const swaggerSpec = require("./config/swagger");
 
 dotenv.config();
 
+
 const app = express();
+
+connectDB();
 
 // 🔐 SECURITY HEADERS
 app.use(helmet());
@@ -62,6 +66,14 @@ app.use((err, req, res, next) => {
 
 // 🚀 START SERVER
 const PORT = process.env.PORT || 5000;
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "OK", uptime: process.uptime() });
+});
+
+app.get("/", (req, res) => {
+  res.send("🚀 SyntecxHub API is running...");
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
